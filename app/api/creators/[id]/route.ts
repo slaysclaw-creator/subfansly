@@ -5,9 +5,10 @@ import { getTokenFromRequest, verifyToken } from '@/lib/auth';
 // GET single creator
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     const result = await query(
       `SELECT c.id, c.user_id, c.display_name, c.avatar_url, c.banner_url, c.bio, 
               c.subscription_price_monthly, c.total_subscribers, c.total_earnings, c.verification_status,
@@ -15,7 +16,7 @@ export async function GET(
        FROM creators c
        JOIN users u ON c.user_id = u.id
        WHERE c.id = $1`,
-      [parseInt(params.id)]
+      [parseInt(resolvedParams.id)]
     );
 
     if (result.rows.length === 0) {
@@ -41,9 +42,10 @@ export async function GET(
 // PUT update creator profile
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     const token = getTokenFromRequest(req);
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -54,7 +56,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    const creatorId = parseInt(params.id);
+    const creatorId = parseInt(resolvedParams.id);
 
     // Check if user owns this creator profile
     const creatorResult = await query(

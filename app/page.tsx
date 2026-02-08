@@ -2,23 +2,6 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
-
-interface Post {
-  id: number;
-  creator_id: number;
-  content: string;
-  image_url?: string;
-  video_url?: string;
-  is_paid_only: boolean;
-  price?: number;
-  likes_count: number;
-  comments_count: number;
-  created_at: string;
-  display_name: string;
-  avatar_url: string;
-  username: string;
-}
 
 interface Creator {
   id: number;
@@ -31,29 +14,19 @@ interface Creator {
 }
 
 export default function Home() {
-  const [posts, setPosts] = useState<Post[]>([]);
   const [creators, setCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [postsRes, creatorsRes] = await Promise.all([
-          fetch('/api/posts?limit=20'),
-          fetch('/api/creators'),
-        ]);
-
-        if (postsRes.ok) {
-          const data = await postsRes.json();
-          setPosts(data.posts);
-        }
-
-        if (creatorsRes.ok) {
-          const data = await creatorsRes.json();
-          setCreators(data.creators.slice(0, 6));
+        const res = await fetch('/api/creators');
+        if (res.ok) {
+          const data = await res.json();
+          setCreators(data.creators || []);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching creators:', error);
       } finally {
         setLoading(false);
       }
@@ -64,127 +37,142 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <p style={{ color: '#999' }}>Loading creators...</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-4">
-      {/* Feed */}
-      <div className="lg:col-span-2 space-y-6">
-        <h2 className="text-2xl font-bold">Feed</h2>
-
-        {posts.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">No posts yet. Follow creators to see their content!</p>
-          </div>
-        ) : (
-          posts.map((post) => (
-            <div
-              key={post.id}
-              className="border rounded-lg p-4 hover:shadow-lg transition-shadow"
-            >
-              {/* Post Header */}
-              <div className="flex items-center mb-4">
-                <Link href={`/creator/${post.creator_id}`}>
-                  <img
-                    src={post.avatar_url || '/default-avatar.png'}
-                    alt={post.display_name}
-                    className="w-10 h-10 rounded-full mr-3 cursor-pointer hover:opacity-80"
-                  />
-                </Link>
-                <div className="flex-1">
-                  <Link href={`/creator/${post.creator_id}`}>
-                    <p className="font-bold cursor-pointer hover:underline">
-                      {post.display_name}
-                    </p>
-                  </Link>
-                  <p className="text-sm text-gray-600">@{post.username}</p>
-                </div>
-                {post.is_paid_only && (
-                  <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
-                    💎 ${post.price}
-                  </span>
-                )}
-              </div>
-
-              {/* Content */}
-              <p className="mb-4 text-gray-800">{post.content}</p>
-
-              {post.image_url && (
-                <img
-                  src={post.image_url}
-                  alt="Post"
-                  className="w-full rounded-lg mb-4 max-h-96 object-cover"
-                />
-              )}
-
-              {/* Actions */}
-              <div className="flex gap-4 text-gray-600 border-t pt-4">
-                <button className="flex items-center gap-2 hover:text-red-500 transition">
-                  ❤️ {post.likes_count}
-                </button>
-                <button className="flex items-center gap-2 hover:text-blue-500 transition">
-                  💬 {post.comments_count}
-                </button>
-                <button className="flex items-center gap-2 hover:text-green-500 transition">
-                  🔄
-                </button>
-              </div>
-            </div>
-          ))
-        )}
+    <div style={{
+      maxWidth: '1400px',
+      margin: '0 auto',
+      padding: '32px 16px',
+    }}>
+      {/* Header */}
+      <div style={{ marginBottom: '48px' }}>
+        <h1 style={{
+          fontSize: '36px',
+          fontWeight: 700,
+          marginBottom: '8px',
+          letterSpacing: '-1px',
+        }}>
+          Discover Creators
+        </h1>
+        <p style={{
+          color: '#999',
+          fontSize: '16px',
+        }}>
+          Support your favorite creators directly
+        </p>
       </div>
 
-      {/* Creator Suggestions Sidebar */}
-      <div className="border rounded-lg p-4 h-fit">
-        <h3 className="text-xl font-bold mb-4">Suggested Creators</h3>
-
-        {creators.length === 0 ? (
-          <p className="text-gray-600">No creators available</p>
-        ) : (
-          <div className="space-y-4">
-            {creators.map((creator) => (
-              <Link
-                key={creator.id}
-                href={`/creator/${creator.id}`}
-                className="block hover:bg-gray-50 p-3 rounded-lg transition"
+      {creators.length === 0 ? (
+        <div style={{
+          textAlign: 'center',
+          paddingTop: '60px',
+        }}>
+          <p style={{ color: '#666', fontSize: '16px' }}>No creators available yet</p>
+        </div>
+      ) : (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+          gap: '16px',
+        }}>
+          {creators.map((creator) => (
+            <Link
+              key={creator.id}
+              href={`/creator/${creator.id}`}
+              style={{
+                textDecoration: 'none',
+                color: 'inherit',
+              }}
+            >
+              <div style={{
+                position: 'relative',
+                aspectRatio: '9/16',
+                background: '#1a1a1a',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
+              }} 
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
-                <div className="flex items-center gap-3 mb-2">
-                  <img
-                    src={creator.avatar_url || '/default-avatar.png'}
-                    alt={creator.display_name}
-                    className="w-12 h-12 rounded-full"
-                  />
-                  <div className="flex-1">
-                    <p className="font-bold text-sm line-clamp-1">
-                      {creator.display_name}
+                {/* Creator Avatar as background */}
+                <img
+                  src={creator.avatar_url || '/default-avatar.png'}
+                  alt={creator.display_name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                  }}
+                />
+
+                {/* Gradient Overlay */}
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0.9) 100%)',
+                }}></div>
+
+                {/* Creator Info at bottom */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  padding: '16px',
+                }}>
+                  <h3 style={{
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    marginBottom: '4px',
+                    lineHeight: 1.2,
+                  }}>
+                    {creator.display_name}
+                  </h3>
+
+                  {creator.verification_status === 'verified' && (
+                    <p style={{
+                      color: '#00d4ff',
+                      fontSize: '12px',
+                      marginBottom: '8px',
+                    }}>
+                      ✓ Verified
                     </p>
-                    {creator.verification_status === 'verified' && (
-                      <span className="text-blue-500 text-xs">✓ Verified</span>
-                    )}
+                  )}
+
+                  <p style={{
+                    color: '#999',
+                    fontSize: '12px',
+                    marginBottom: '12px',
+                    lineHeight: 1.3,
+                  }}>
+                    {creator.bio}
+                  </p>
+
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    fontSize: '12px',
+                    color: '#999',
+                  }}>
+                    <span>{creator.total_subscribers.toLocaleString()} subs</span>
+                    <span style={{ fontWeight: 600, color: '#ff005e' }}>
+                      ${creator.subscription_price_monthly}
+                    </span>
                   </div>
                 </div>
-                <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-                  {creator.bio}
-                </p>
-                <div className="flex justify-between items-center text-xs text-gray-500">
-                  <span>{creator.total_subscribers} subscribers</span>
-                  <span className="font-bold text-purple-600">
-                    ${creator.subscription_price_monthly}/mo
-                  </span>
-                </div>
-                <button className="w-full mt-2 bg-purple-600 text-white py-1 rounded hover:bg-purple-700 transition text-sm">
-                  Subscribe
-                </button>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
-

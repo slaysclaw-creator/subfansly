@@ -17,47 +17,22 @@ interface Creator {
   username: string;
 }
 
-interface Post {
-  id: number;
-  creator_id: number;
-  content: string;
-  image_url?: string;
-  is_paid_only: boolean;
-  price?: number;
-  likes_count: number;
-  comments_count: number;
-  created_at: string;
-  display_name: string;
-  avatar_url: string;
-}
-
 export default function CreatorProfile() {
   const params = useParams();
   const router = useRouter();
   const creatorId = params.id as string;
 
   const [creator, setCreator] = useState<Creator | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [activeTab, setActiveTab] = useState('posts');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [creatorRes, postsRes] = await Promise.all([
-          fetch(`/api/creators/${creatorId}`),
-          fetch(`/api/posts?creatorId=${creatorId}`),
-        ]);
-
-        if (creatorRes.ok) {
-          const data = await creatorRes.json();
+        const res = await fetch(`/api/creators/${creatorId}`);
+        if (res.ok) {
+          const data = await res.json();
           setCreator(data.creator);
-        }
-
-        if (postsRes.ok) {
-          const data = await postsRes.json();
-          setPosts(data.posts);
         }
       } catch (error) {
         console.error('Error fetching creator:', error);
@@ -104,16 +79,16 @@ export default function CreatorProfile() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <p style={{ color: '#999' }}>Loading...</p>
       </div>
     );
   }
 
   if (!creator) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Creator not found</p>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <p style={{ color: '#999' }}>Creator not found</p>
       </div>
     );
   }
@@ -121,139 +96,195 @@ export default function CreatorProfile() {
   return (
     <div>
       {/* Banner */}
-      <div className="relative h-48 bg-gray-200 overflow-hidden">
+      <div style={{
+        height: '200px',
+        background: '#1a1a1a',
+        overflow: 'hidden',
+      }}>
         {creator.banner_url && (
           <img
             src={creator.banner_url}
             alt="Banner"
-            className="w-full h-full object-cover"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
           />
         )}
       </div>
 
-      {/* Profile Info */}
-      <div className="max-w-4xl mx-auto px-4 pb-8">
-        <div className="flex items-end gap-4 -mt-12 mb-4">
+      {/* Profile Section */}
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '0 16px',
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-end',
+          gap: '32px',
+          marginTop: '-80px',
+          marginBottom: '32px',
+          position: 'relative',
+          zIndex: 10,
+        }}>
           {/* Avatar */}
           <img
             src={creator.avatar_url || '/default-avatar.png'}
             alt={creator.display_name}
-            className="w-24 h-24 rounded-full border-4 border-white"
+            style={{
+              width: '160px',
+              height: '160px',
+              borderRadius: '8px',
+              border: '3px solid #000',
+              objectFit: 'cover',
+            }}
           />
 
-          {/* Right side */}
-          <div className="flex-1 mb-2">
-            <h1 className="text-3xl font-bold">{creator.display_name}</h1>
-            <p className="text-gray-600">@{creator.username}</p>
+          {/* Creator Info */}
+          <div style={{ flex: 1, marginBottom: '8px' }}>
+            <h1 style={{
+              fontSize: '32px',
+              fontWeight: 700,
+              marginBottom: '4px',
+            }}>
+              {creator.display_name}
+            </h1>
+            <p style={{
+              color: '#999',
+              fontSize: '16px',
+              marginBottom: '12px',
+            }}>
+              @{creator.username}
+            </p>
+
             {creator.verification_status === 'verified' && (
-              <p className="text-blue-500 text-sm">✓ Verified Creator</p>
+              <p style={{
+                color: '#ff005e',
+                fontSize: '14px',
+                marginBottom: '16px',
+              }}>
+                ✓ Verified Creator
+              </p>
             )}
-          </div>
 
-          {/* Subscribe Button */}
-          <button
-            onClick={handleSubscribe}
-            disabled={isSubscribed}
-            className={`px-6 py-2 rounded-lg font-bold transition ${
-              isSubscribed
-                ? 'bg-gray-200 text-gray-600 cursor-not-allowed'
-                : 'bg-purple-600 text-white hover:bg-purple-700'
-            }`}
-          >
-            {isSubscribed ? 'Subscribed ✓' : `Subscribe $${creator.subscription_price_monthly}/mo`}
-          </button>
-        </div>
+            <p style={{
+              color: '#ccc',
+              fontSize: '16px',
+              marginBottom: '24px',
+              lineHeight: 1.5,
+              maxWidth: '600px',
+            }}>
+              {creator.bio}
+            </p>
 
-        {/* Bio & Stats */}
-        <p className="text-gray-700 mb-6">{creator.bio}</p>
-
-        <div className="grid grid-cols-4 gap-4 mb-8 bg-gray-50 p-4 rounded-lg">
-          <div className="text-center">
-            <p className="text-2xl font-bold">{creator.total_subscribers}</p>
-            <p className="text-sm text-gray-600">Subscribers</p>
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold">${(creator.total_earnings).toFixed(2)}</p>
-            <p className="text-sm text-gray-600">Total Earnings</p>
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold">{posts.length}</p>
-            <p className="text-sm text-gray-600">Posts</p>
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold">${(creator.total_earnings * 0.6).toFixed(2)}</p>
-            <p className="text-sm text-gray-600">Creator Earnings (60%)</p>
+            {/* Subscribe Button */}
+            <button
+              onClick={handleSubscribe}
+              disabled={isSubscribed}
+              style={{
+                padding: '12px 32px',
+                background: isSubscribed ? '#333' : '#ff005e',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                fontSize: '16px',
+                fontWeight: 600,
+                cursor: isSubscribed ? 'not-allowed' : 'pointer',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => !isSubscribed && (e.currentTarget.style.background = '#ff1a75')}
+              onMouseLeave={(e) => !isSubscribed && (e.currentTarget.style.background = '#ff005e')}
+            >
+              {isSubscribed ? 'Subscribed ✓' : `Subscribe $${creator.subscription_price_monthly}/mo`}
+            </button>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="border-b mb-6 flex gap-8">
-          <button
-            onClick={() => setActiveTab('posts')}
-            className={`pb-4 font-bold transition ${
-              activeTab === 'posts'
-                ? 'border-b-2 border-purple-600'
-                : 'text-gray-600 hover:text-black'
-            }`}
-          >
-            Posts
-          </button>
-          <button
-            onClick={() => setActiveTab('about')}
-            className={`pb-4 font-bold transition ${
-              activeTab === 'about'
-                ? 'border-b-2 border-purple-600'
-                : 'text-gray-600 hover:text-black'
-            }`}
-          >
-            About
-          </button>
+        {/* Stats */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gap: '24px',
+          padding: '24px',
+          background: '#1a1a1a',
+          borderRadius: '8px',
+          marginBottom: '48px',
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <p style={{
+              fontSize: '28px',
+              fontWeight: 700,
+              marginBottom: '4px',
+            }}>
+              {creator.total_subscribers.toLocaleString()}
+            </p>
+            <p style={{
+              color: '#999',
+              fontSize: '14px',
+            }}>
+              Subscribers
+            </p>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <p style={{
+              fontSize: '28px',
+              fontWeight: 700,
+              marginBottom: '4px',
+            }}>
+              ${(creator.total_earnings).toFixed(0)}
+            </p>
+            <p style={{
+              color: '#999',
+              fontSize: '14px',
+            }}>
+              Total Earnings
+            </p>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <p style={{
+              fontSize: '28px',
+              fontWeight: 700,
+              marginBottom: '4px',
+              color: '#ff005e',
+            }}>
+              ${(creator.total_earnings * 0.6).toFixed(0)}
+            </p>
+            <p style={{
+              color: '#999',
+              fontSize: '14px',
+            }}>
+              Your Earnings (60%)
+            </p>
+          </div>
         </div>
 
-        {/* Posts */}
-        {activeTab === 'posts' && (
-          <div className="space-y-6">
-            {posts.length === 0 ? (
-              <p className="text-gray-600 text-center py-8">No posts yet</p>
-            ) : (
-              posts.map((post) => (
-                <div
-                  key={post.id}
-                  className="border rounded-lg p-4 hover:shadow-lg transition-shadow"
-                >
-                  <p className="mb-4">{post.content}</p>
-                  {post.image_url && (
-                    <img
-                      src={post.image_url}
-                      alt="Post"
-                      className="w-full rounded-lg mb-4 max-h-96 object-cover"
-                    />
-                  )}
-                  <div className="flex gap-4 text-gray-600 border-t pt-4">
-                    <button className="flex items-center gap-2 hover:text-red-500">
-                      ❤️ {post.likes_count}
-                    </button>
-                    <button className="flex items-center gap-2 hover:text-blue-500">
-                      💬 {post.comments_count}
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-
-        {/* About */}
-        {activeTab === 'about' && (
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <h3 className="font-bold mb-4">About {creator.display_name}</h3>
-            <p className="text-gray-700 mb-4">{creator.bio}</p>
-            <div className="space-y-2">
-              <p><strong>Subscription Price:</strong> ${creator.subscription_price_monthly}/month</p>
-              <p><strong>Status:</strong> {creator.verification_status === 'verified' ? '✓ Verified' : 'Unverified'}</p>
+        {/* Content Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+          gap: '16px',
+          marginBottom: '48px',
+        }}>
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div
+              key={i}
+              style={{
+                aspectRatio: '9/16',
+                background: '#1a1a1a',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#666',
+                fontSize: '14px',
+              }}
+            >
+              [Content Post {i}]
             </div>
-          </div>
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );

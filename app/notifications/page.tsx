@@ -75,7 +75,17 @@ export default function Notifications() {
 
   const filterNotifications = () => {
     if (activeTab === 'all') return notifications;
-    return notifications.filter((n) => n.notification_type === activeTab);
+    
+    const typeMap: Record<string, string[]> = {
+      'tags': ['tag'],
+      'comments': ['comment'],
+      'mentions': ['mention'],
+      'subscriptions': ['subscription'],
+      'promotions': ['promotion'],
+    };
+    
+    const allowedTypes = typeMap[activeTab] || [];
+    return notifications.filter((n) => allowedTypes.includes(n.notification_type));
   };
 
   const getIcon = (type: string) => {

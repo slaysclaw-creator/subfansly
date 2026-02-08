@@ -33,68 +33,149 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="border-b bg-white sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <nav style={{
+      background: '#000',
+      borderBottom: '1px solid #333',
+      position: 'sticky',
+      top: 0,
+      zIndex: 50,
+      padding: '12px 0',
+    }}>
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '0 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: '60px',
+      }}>
         {/* Logo */}
-        <Link href="/" className="text-2xl font-bold text-purple-600">
-          subfansly.io
+        <Link href="/" style={{
+          fontSize: '24px',
+          fontWeight: 'bold',
+          color: '#fff',
+          textDecoration: 'none',
+          letterSpacing: '-1px',
+        }}>
+          SubFansly
         </Link>
 
         {/* Navigation Links */}
-        <div className="hidden md:flex gap-8 items-center">
+        <div style={{
+          display: 'flex',
+          gap: '32px',
+          alignItems: 'center',
+          flex: 1,
+          marginLeft: '48px',
+        }}>
           {user ? (
             <>
-              <Link href="/feed" className="text-gray-700 hover:text-purple-600 transition">
+              <Link href="/feed" style={{
+                color: '#999',
+                textDecoration: 'none',
+                fontSize: '14px',
+                fontWeight: 500,
+                transition: 'color 0.2s',
+              }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = '#999'}>
                 Feed
               </Link>
-              <Link href="/notifications" className="text-gray-700 hover:text-purple-600 transition">
+              <Link href="/notifications" style={{
+                color: '#999',
+                textDecoration: 'none',
+                fontSize: '14px',
+                fontWeight: 500,
+                transition: 'color 0.2s',
+              }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = '#999'}>
                 Notifications
               </Link>
-              <Link href="/messages" className="text-gray-700 hover:text-purple-600 transition">
+              <Link href="/messages" style={{
+                color: '#999',
+                textDecoration: 'none',
+                fontSize: '14px',
+                fontWeight: 500,
+                transition: 'color 0.2s',
+              }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = '#999'}>
                 Messages
               </Link>
-              <Link href="/subscriptions" className="text-gray-700 hover:text-purple-600 transition">
-                Subscriptions
-              </Link>
-              <Link href="/wallet" className="text-gray-700 hover:text-purple-600 transition">
-                Wallet
-              </Link>
               {user.isCreator && (
-                <Link href="/dashboard" className="text-gray-700 hover:text-purple-600 transition font-bold">
-                  Dashboard
+                <Link href="/dashboard" style={{
+                  color: '#ff005e',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                }} onMouseEnter={(e) => e.currentTarget.style.color = '#ff1a75'} onMouseLeave={(e) => e.currentTarget.style.color = '#ff005e'}>
+                  Creator Hub
                 </Link>
               )}
-              <div className="flex items-center gap-4">
-                <span className="text-gray-700">@{user.username}</span>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-                >
-                  Logout
-                </button>
-              </div>
             </>
           ) : (
             <>
-              <Link href="/login" className="text-gray-700 hover:text-purple-600 transition">
+              <Link href="/login" style={{
+                color: '#999',
+                textDecoration: 'none',
+                fontSize: '14px',
+                fontWeight: 500,
+                transition: 'color 0.2s',
+              }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = '#999'}>
                 Login
-              </Link>
-              <Link
-                href="/register"
-                className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
-              >
-                Sign Up
               </Link>
             </>
           )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <button className="md:hidden text-gray-700">
-          ☰
-        </button>
+        {/* Right side */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          marginLeft: 'auto',
+        }}>
+          {user ? (
+            <>
+              <span style={{
+                color: '#999',
+                fontSize: '14px',
+              }}>
+                @{user.username}
+              </span>
+              <button
+                onClick={handleLogout}
+                style={{
+                  padding: '8px 16px',
+                  background: '#333',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  transition: 'background 0.2s',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#444'}
+                onMouseLeave={(e) => e.currentTarget.style.background = '#333'}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link href="/register" style={{
+              padding: '8px 16px',
+              background: '#ff005e',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 600,
+              textDecoration: 'none',
+              transition: 'background 0.2s',
+            }} onMouseEnter={(e) => e.currentTarget.style.background = '#ff1a75'} onMouseLeave={(e) => e.currentTarget.style.background = '#ff005e'}>
+              Sign Up
+            </Link>
+          )}
+        </div>
       </div>
     </nav>
   );
 }
-
