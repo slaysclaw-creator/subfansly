@@ -79,7 +79,6 @@ export default function CreatorListings() {
                 listingId={listing.id}
                 listingTitle={listing.title}
                 priceCents={listing.priceCents}
-                userId={creatorId}
               />
             </div>
           ))}

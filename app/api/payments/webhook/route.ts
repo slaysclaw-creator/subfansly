@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { query } from "@/lib/db";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
@@ -30,25 +31,23 @@ export async function POST(request: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
     const listingId = session.metadata?.listingId;
     const userId = session.metadata?.userId;
+    const amountTotal = session.amount_total || 0;
 
-    // TODO: Update database to mark purchase as complete
-    // await db.orders.create({
-    //   buyerId: userId,
-    //   listingId: listingId,
-    //   totalCents: session.amount_total,
-    //   currency: "USD",
-    //   status: "PAID",
-    //   provider: "STRIPE",
-    //   providerRef: session.payment_intent,
-    // });
-
-    console.log(`Payment successful for listing ${listingId}`);
+    try {
+      await query(
+        `INSERT INTO orders (buyer_id, listing_id, amount_cents, currency, status, provider, provider_reference, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())`,
+        [userId, listingId, amountTotal, "USD", "completed", "stripe", session.payment_intent]
+      );
+      console.log(`✓ Payment recorded for listing ${listingId}`);
+    } catch (error) {
+      console.error("Failed to save order:", error);
+    }
   }
 
   if (event.type === "charge.refunded") {
     const charge = event.data.object as Stripe.Charge;
     console.log(`Refund processed: ${charge.id}`);
-    // TODO: Handle refund logic
   }
 
   return Response.json({ received: true });

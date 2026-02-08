@@ -1,36 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface StripeCheckoutButtonProps {
   listingId: string;
   listingTitle: string;
   priceCents: number;
-  userId: string;
 }
 
 export default function StripeCheckoutButton({
   listingId,
   listingTitle,
   priceCents,
-  userId,
 }: StripeCheckoutButtonProps) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleCheckout = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
       const response = await fetch("/api/payments/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify({
           listingId,
           listingTitle,
           priceCents,
-          userId,
         }),
       });
 
@@ -56,7 +64,7 @@ export default function StripeCheckoutButton({
       <button
         onClick={handleCheckout}
         disabled={loading}
-        className="w-full rounded-lg bg-indigo-600 px-6 py-3 font-semibold text-white disabled:opacity-50 hover:bg-indigo-700 transition"
+        className="w-full rounded-lg bg-pink-600 px-6 py-3 font-semibold text-white disabled:opacity-50 hover:bg-pink-500 transition"
       >
         {loading ? "Processing..." : `Buy Now - $${(priceCents / 100).toFixed(2)}`}
       </button>
