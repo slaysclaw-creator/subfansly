@@ -44,37 +44,13 @@ export default function CreatorProfile() {
     fetchData();
   }, [creatorId]);
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = () => {
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/login');
       return;
     }
-
-    try {
-      const response = await fetch('/api/subscriptions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          creatorId: parseInt(creatorId),
-          subscriptionTier: 'basic',
-        }),
-      });
-
-      if (response.ok) {
-        setIsSubscribed(true);
-        alert('Successfully subscribed!');
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to subscribe');
-      }
-    } catch (error) {
-      console.error('Subscribe error:', error);
-      alert('An error occurred');
-    }
+    router.push(`/creator/${creatorId}/subscribe`);
   };
 
   if (loading) {
