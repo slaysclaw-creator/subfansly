@@ -55,211 +55,157 @@ export default function CreatorProfile() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <p style={{ color: '#999' }}>Loading...</p>
+      <div className="flex justify-center items-center min-h-screen bg-background">
+        <div className="text-center">
+          <div className="loading-spinner mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
     );
   }
 
   if (!creator) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <p style={{ color: '#999' }}>Creator not found</p>
+      <div className="flex justify-center items-center min-h-screen bg-background">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-2">Creator not found</h2>
+          <p className="text-muted-foreground">
+            <Link href="/" className="text-primary hover:underline">
+              Back to discover
+            </Link>
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      {/* Banner */}
-      <div style={{
-        height: '200px',
-        background: '#1a1a1a',
-        overflow: 'hidden',
-      }}>
+    <div className="bg-background min-h-screen">
+      {/* Banner with Gradient Overlay */}
+      <div className="relative h-64 md:h-80 bg-gradient-to-b from-primary/20 to-background overflow-hidden">
         {creator.banner_url && (
           <img
             src={creator.banner_url}
             alt="Banner"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-            }}
+            className="w-full h-full object-cover"
           />
         )}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background"></div>
       </div>
 
       {/* Profile Section */}
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '0 16px',
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          gap: '32px',
-          marginTop: '-80px',
-          marginBottom: '32px',
-          position: 'relative',
-          zIndex: 10,
-        }}>
-          {/* Avatar */}
-          <img
-            src={creator.avatar_url || '/default-avatar.png'}
-            alt={creator.display_name}
-            style={{
-              width: '160px',
-              height: '160px',
-              borderRadius: '8px',
-              border: '3px solid #000',
-              objectFit: 'cover',
-            }}
-          />
+      <div className="max-w-6xl mx-auto px-4">
+        {/* Avatar + Creator Info */}
+        <div className="flex flex-col md:flex-row items-start md:items-end gap-6 md:gap-8 -mt-32 mb-8 md:mb-12 relative z-10">
+          {/* Avatar with Glow */}
+          <div className="glow-primary p-1 rounded-2xl">
+            <img
+              src={creator.avatar_url || '/default-avatar.png'}
+              alt={creator.display_name}
+              className="w-40 h-40 rounded-xl border-4 border-background object-cover shadow-lg"
+            />
+          </div>
 
           {/* Creator Info */}
-          <div style={{ flex: 1, marginBottom: '8px' }}>
-            <h1 style={{
-              fontSize: '32px',
-              fontWeight: 700,
-              marginBottom: '4px',
-            }}>
+          <div className="flex-1 mb-2">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">
               {creator.display_name}
             </h1>
-            <p style={{
-              color: '#999',
-              fontSize: '16px',
-              marginBottom: '12px',
-            }}>
+            <p className="text-lg text-muted-foreground mb-2">
               @{creator.username}
             </p>
 
             {creator.verification_status === 'verified' && (
-              <p style={{
-                color: '#ff005e',
-                fontSize: '14px',
-                marginBottom: '16px',
-              }}>
-                ✓ Verified Creator
-              </p>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary/20 border border-primary rounded-full text-primary text-sm font-semibold">
+                  ✓ Verified Creator
+                </span>
+              </div>
             )}
 
-            <p style={{
-              color: '#ccc',
-              fontSize: '16px',
-              marginBottom: '24px',
-              lineHeight: 1.5,
-              maxWidth: '600px',
-            }}>
+            <p className="text-base text-muted-foreground mb-6 max-w-2xl leading-relaxed">
               {creator.bio}
             </p>
 
-            {/* Subscribe Button */}
+            {/* Subscribe Button - Gradient with Glow */}
             <button
               onClick={handleSubscribe}
               disabled={isSubscribed}
-              style={{
-                padding: '12px 32px',
-                background: isSubscribed ? '#333' : '#ff005e',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                fontSize: '16px',
-                fontWeight: 600,
-                cursor: isSubscribed ? 'not-allowed' : 'pointer',
-                transition: 'background 0.2s',
-              }}
-              onMouseEnter={(e) => !isSubscribed && (e.currentTarget.style.background = '#ff1a75')}
-              onMouseLeave={(e) => !isSubscribed && (e.currentTarget.style.background = '#ff005e')}
+              className={`px-8 py-3 rounded-lg font-bold text-lg transition-all duration-300 ${
+                isSubscribed
+                  ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                  : 'bg-gradient-primary text-white hover:shadow-glow-primary hover:scale-105'
+              }`}
             >
-              {isSubscribed ? 'Subscribed ✓' : `Subscribe $${creator.subscription_price_monthly}/mo`}
+              {isSubscribed ? '✓ Subscribed' : `Subscribe $${creator.subscription_price_monthly}/mo`}
             </button>
           </div>
         </div>
 
-        {/* Stats */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-          gap: '24px',
-          padding: '24px',
-          background: '#1a1a1a',
-          borderRadius: '8px',
-          marginBottom: '48px',
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <p style={{
-              fontSize: '28px',
-              fontWeight: 700,
-              marginBottom: '4px',
-            }}>
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12 md:mb-16">
+          {/* Subscribers */}
+          <div className="bg-gradient-to-br from-card to-sidebar rounded-xl p-6 border border-border hover:border-primary/50 transition-colors">
+            <p className="text-4xl font-bold text-foreground mb-2">
               {creator.total_subscribers.toLocaleString()}
             </p>
-            <p style={{
-              color: '#999',
-              fontSize: '14px',
-            }}>
-              Subscribers
-            </p>
+            <p className="text-muted-foreground font-medium">Subscribers</p>
           </div>
-          <div style={{ textAlign: 'center' }}>
-            <p style={{
-              fontSize: '28px',
-              fontWeight: 700,
-              marginBottom: '4px',
-            }}>
-              ${(creator.total_earnings).toFixed(0)}
+
+          {/* Total Earnings */}
+          <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl p-6 border border-primary/30 hover:border-primary/80 transition-colors">
+            <p className="text-4xl font-bold text-gradient mb-2">
+              ${creator.total_earnings.toFixed(0)}
             </p>
-            <p style={{
-              color: '#999',
-              fontSize: '14px',
-            }}>
-              Total Earnings
-            </p>
+            <p className="text-muted-foreground font-medium">Total Platform Earnings</p>
           </div>
-          <div style={{ textAlign: 'center' }}>
-            <p style={{
-              fontSize: '28px',
-              fontWeight: 700,
-              marginBottom: '4px',
-              color: '#ff005e',
-            }}>
-              ${(creator.total_earnings * 0.6).toFixed(0)}
+
+          {/* Creator Share */}
+          <div className="bg-gradient-to-br from-secondary/10 to-primary/10 rounded-xl p-6 border border-secondary/30 hover:border-secondary/80 transition-colors">
+            <p className="text-4xl font-bold text-foreground mb-2">
+              <span className="text-gradient">
+                ${(creator.total_earnings * 0.7).toFixed(0)}
+              </span>
             </p>
-            <p style={{
-              color: '#999',
-              fontSize: '14px',
-            }}>
-              Your Earnings (60%)
-            </p>
+            <p className="text-muted-foreground font-medium">Creator Earnings (70%)</p>
           </div>
         </div>
 
-        {/* Content Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-          gap: '16px',
-          marginBottom: '48px',
-        }}>
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div
-              key={i}
-              style={{
-                aspectRatio: '9/16',
-                background: '#1a1a1a',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#666',
-                fontSize: '14px',
-              }}
-            >
-              [Content Post {i}]
-            </div>
-          ))}
+        {/* Featured Posts Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold mb-6 text-gradient">Featured Posts</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div
+                key={i}
+                className="aspect-[9/16] bg-gradient-to-br from-card to-sidebar rounded-xl overflow-hidden border border-border hover:border-primary/50 card-hover group"
+              >
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 group-hover:from-primary/20 group-hover:to-secondary/20 transition-all duration-300">
+                  <div className="text-center">
+                    <p className="text-muted-foreground text-sm font-medium">Post {i}</p>
+                    <p className="text-muted-foreground/70 text-xs mt-1">Exclusive content</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-2xl p-8 md:p-12 mb-16 border border-primary/30 text-center">
+          <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+            Support {creator.display_name} Today
+          </h3>
+          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            Subscribe now to unlock exclusive content and connect directly with this creator
+          </p>
+          <button
+            onClick={handleSubscribe}
+            disabled={isSubscribed}
+            className="px-8 py-4 bg-gradient-primary text-white font-bold text-lg rounded-lg hover:shadow-glow-lg transition-all duration-300 hover:scale-105"
+          >
+            {isSubscribed ? '✓ Subscribed' : 'Subscribe Now'}
+          </button>
         </div>
       </div>
     </div>

@@ -57,48 +57,100 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
-      <div className="mx-auto max-w-7xl px-6 py-12">
-        <div className="flex justify-between items-center mb-12">
-          <h1 className="text-4xl font-bold">My Library</h1>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-bold text-gradient mb-2">
+              My Library
+            </h1>
+            <p className="text-muted-foreground">
+              Your purchased subscriptions & content
+            </p>
+          </div>
           <button
             onClick={handleLogout}
-            className="px-6 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition"
+            className="px-6 py-2 bg-muted hover:bg-muted/80 text-foreground font-semibold rounded-lg transition-all duration-300"
           >
             Logout
           </button>
         </div>
 
-        <Link
-          href="/marketplace"
-          className="inline-block mb-8 px-6 py-2 bg-pink-600 hover:bg-pink-500 rounded-lg transition"
-        >
-          Browse Creators
-        </Link>
+        {/* Navigation */}
+        <div className="mb-8">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-6 py-2 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-glow-primary transition-all duration-300"
+          >
+            ← Browse Creators
+          </Link>
+        </div>
 
+        {/* Content */}
         {loading ? (
-          <div className="text-center">Loading...</div>
+          <div className="flex justify-center items-center py-20">
+            <div className="text-center">
+              <div className="loading-spinner mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading your library...</p>
+            </div>
+          </div>
         ) : items.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-slate-400 mb-4">No content purchased yet</p>
-            <Link href="/marketplace" className="text-pink-500 hover:text-pink-400">
-              Browse creators →
+          <div className="text-center py-20 bg-card rounded-2xl border border-border">
+            <h3 className="text-2xl font-bold text-foreground mb-2">
+              Your library is empty
+            </h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              Start supporting your favorite creators to access exclusive content
+            </p>
+            <Link
+              href="/"
+              className="inline-block px-8 py-3 bg-gradient-primary text-white font-bold rounded-lg hover:shadow-glow-primary transition-all duration-300"
+            >
+              Browse Creators →
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map((item) => (
-              <div key={item.id} className="rounded-lg bg-slate-800 p-6">
-                <h3 className="text-xl font-bold">{item.title}</h3>
-                <p className="text-slate-400 text-sm">{item.creatorName}</p>
-                <p className="text-slate-500 text-xs mt-2">
-                  Purchased: {new Date(item.purchasedAt).toLocaleDateString()}
-                </p>
-                <button className="mt-4 w-full px-4 py-2 bg-pink-600 hover:bg-pink-500 rounded-lg transition">
-                  View Content
-                </button>
-              </div>
-            ))}
+          <div>
+            <div className="mb-6 flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-foreground">
+                {items.length} subscription{items.length !== 1 ? 's' : ''}
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-gradient-to-br from-card to-sidebar rounded-xl p-6 border border-border hover:border-primary/50 transition-all duration-300 card-hover group"
+                >
+                  <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-gradient transition-all">
+                    {item.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-4">
+                    {item.creatorName}
+                  </p>
+                  <p className="text-muted-foreground/70 text-xs mb-6">
+                    Subscribed: {new Date(item.purchasedAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </p>
+                  <div className="flex gap-2">
+                    <Link
+                      href={`/creator/${item.listingId.split('-')[1]}`}
+                      className="flex-1 px-4 py-2 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-glow-primary transition-all duration-300 text-center text-sm"
+                    >
+                      View Profile
+                    </Link>
+                    <button className="px-4 py-2 border border-primary text-primary font-semibold rounded-lg hover:bg-primary/10 transition-all duration-300 text-sm">
+                      ⋯
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

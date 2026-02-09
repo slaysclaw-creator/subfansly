@@ -25,7 +25,7 @@ cp .env.local.example .env.local
 createdb subfansly
 
 # Run schema
-psql fanplace < schema.sql
+psql subfansly < schema.sql
 
 # Seed demo data
 npm run seed

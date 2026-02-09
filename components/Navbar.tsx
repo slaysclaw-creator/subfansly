@@ -13,6 +13,7 @@ interface User {
 export default function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
@@ -33,149 +34,187 @@ export default function Navbar() {
   };
 
   return (
-    <nav style={{
-      background: '#000',
-      borderBottom: '1px solid #333',
-      position: 'sticky',
-      top: 0,
-      zIndex: 50,
-      padding: '12px 0',
-    }}>
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '0 16px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        height: '60px',
-      }}>
+    <nav className="sticky top-0 z-50 bg-sidebar border-b border-border">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" style={{
-          fontSize: '24px',
-          fontWeight: 'bold',
-          color: '#fff',
-          textDecoration: 'none',
-          letterSpacing: '-1px',
-        }}>
-          SubFansly
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-2xl font-bold text-gradient hover:opacity-80 transition-opacity"
+        >
+          <span className="text-gradient">SubFansly</span>
         </Link>
 
-        {/* Navigation Links */}
-        <div style={{
-          display: 'flex',
-          gap: '32px',
-          alignItems: 'center',
-          flex: 1,
-          marginLeft: '48px',
-        }}>
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-8 flex-1 ml-12">
           {user ? (
             <>
-              <Link href="/feed" style={{
-                color: '#999',
-                textDecoration: 'none',
-                fontSize: '14px',
-                fontWeight: 500,
-                transition: 'color 0.2s',
-              }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = '#999'}>
+              <Link
+                href="/"
+                className="text-muted-foreground hover:text-foreground font-medium text-sm transition-colors"
+              >
+                Discover
+              </Link>
+              <Link
+                href="/feed"
+                className="text-muted-foreground hover:text-foreground font-medium text-sm transition-colors"
+              >
                 Feed
               </Link>
-              <Link href="/notifications" style={{
-                color: '#999',
-                textDecoration: 'none',
-                fontSize: '14px',
-                fontWeight: 500,
-                transition: 'color 0.2s',
-              }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = '#999'}>
-                Notifications
-              </Link>
-              <Link href="/messages" style={{
-                color: '#999',
-                textDecoration: 'none',
-                fontSize: '14px',
-                fontWeight: 500,
-                transition: 'color 0.2s',
-              }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = '#999'}>
+              <Link
+                href="/messages"
+                className="text-muted-foreground hover:text-foreground font-medium text-sm transition-colors"
+              >
                 Messages
               </Link>
+              <Link
+                href="/subscriptions"
+                className="text-muted-foreground hover:text-foreground font-medium text-sm transition-colors"
+              >
+                Subscriptions
+              </Link>
               {user.isCreator && (
-                <Link href="/dashboard" style={{
-                  color: '#ff005e',
-                  textDecoration: 'none',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                }} onMouseEnter={(e) => e.currentTarget.style.color = '#ff1a75'} onMouseLeave={(e) => e.currentTarget.style.color = '#ff005e'}>
+                <Link
+                  href="/creator-dashboard"
+                  className="text-primary hover:text-primary/80 font-semibold text-sm transition-colors"
+                >
                   Creator Hub
                 </Link>
               )}
             </>
           ) : (
-            <>
-              <Link href="/login" style={{
-                color: '#999',
-                textDecoration: 'none',
-                fontSize: '14px',
-                fontWeight: 500,
-                transition: 'color 0.2s',
-              }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = '#999'}>
-                Login
-              </Link>
-            </>
+            <Link
+              href="/login"
+              className="text-muted-foreground hover:text-foreground font-medium text-sm transition-colors"
+            >
+              Login
+            </Link>
           )}
         </div>
 
         {/* Right side */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          marginLeft: 'auto',
-        }}>
+        <div className="hidden md:flex items-center gap-4 ml-auto">
           {user ? (
             <>
-              <span style={{
-                color: '#999',
-                fontSize: '14px',
-              }}>
+              <span className="text-muted-foreground text-sm font-medium">
                 @{user.username}
               </span>
               <button
                 onClick={handleLogout}
-                style={{
-                  padding: '8px 16px',
-                  background: '#333',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  transition: 'background 0.2s',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#444'}
-                onMouseLeave={(e) => e.currentTarget.style.background = '#333'}
+                className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground font-semibold rounded-lg transition-all duration-300 text-sm"
               >
                 Logout
               </button>
             </>
           ) : (
-            <Link href="/register" style={{
-              padding: '8px 16px',
-              background: '#ff005e',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 600,
-              textDecoration: 'none',
-              transition: 'background 0.2s',
-            }} onMouseEnter={(e) => e.currentTarget.style.background = '#ff1a75'} onMouseLeave={(e) => e.currentTarget.style.background = '#ff005e'}>
+            <Link
+              href="/register"
+              className="px-6 py-2 bg-gradient-primary text-white font-bold rounded-lg hover:shadow-glow-primary transition-all duration-300 text-sm"
+            >
               Sign Up
             </Link>
           )}
         </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden text-foreground hover:text-primary transition-colors"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
       </div>
+
+      {/* Mobile Navigation */}
+      {isOpen && (
+        <div className="md:hidden bg-card border-t border-border py-4">
+          <div className="max-w-7xl mx-auto px-4 flex flex-col gap-4">
+            {user ? (
+              <>
+                <Link
+                  href="/"
+                  className="text-muted-foreground hover:text-foreground font-medium text-sm transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Discover
+                </Link>
+                <Link
+                  href="/feed"
+                  className="text-muted-foreground hover:text-foreground font-medium text-sm transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Feed
+                </Link>
+                <Link
+                  href="/messages"
+                  className="text-muted-foreground hover:text-foreground font-medium text-sm transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Messages
+                </Link>
+                <Link
+                  href="/subscriptions"
+                  className="text-muted-foreground hover:text-foreground font-medium text-sm transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Subscriptions
+                </Link>
+                {user.isCreator && (
+                  <Link
+                    href="/creator-dashboard"
+                    className="text-primary hover:text-primary/80 font-semibold text-sm transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Creator Hub
+                  </Link>
+                )}
+                <div className="border-t border-border pt-4 flex flex-col gap-3">
+                  <span className="text-muted-foreground text-sm font-medium">
+                    @{user.username}
+                  </span>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                    className="w-full px-4 py-2 bg-muted hover:bg-muted/80 text-foreground font-semibold rounded-lg transition-all duration-300 text-sm"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col gap-3">
+                <Link
+                  href="/login"
+                  className="text-muted-foreground hover:text-foreground font-medium text-sm transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="w-full px-6 py-2 bg-gradient-primary text-white font-bold rounded-lg hover:shadow-glow-primary transition-all duration-300 text-sm text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

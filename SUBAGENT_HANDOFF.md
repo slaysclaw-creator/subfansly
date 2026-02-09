@@ -1,6 +1,7 @@
-# fanplace.io - Subagent Handoff Report
+# subfansly - Subagent Handoff Report
 
-**Status:** ✅ COMPLETE
+**Status:** ⚠️ REVIEW NEEDED
+**Note:** This report appears to be copied from `fanplace.io` and does not reflect `subfansly` paths or branding. Verify features/endpoints against the actual `subfansly` codebase before relying on this checklist.
 **Completed By:** Subagent (agent:main:subagent)
 **Date:** February 8, 2026
 **Time Spent:** ~5 hours

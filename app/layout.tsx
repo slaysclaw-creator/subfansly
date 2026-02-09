@@ -24,6 +24,8 @@ export default function RootLayout({
             --white: #fff;
             --accent: #ff005e;
             --purple: #9d4edd;
+            --pink-primary: #ee4da4;
+            --purple-secondary: #8860d6;
           }
 
           * {
